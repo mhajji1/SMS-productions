@@ -49,10 +49,9 @@ class Experiment():
             else:
                 self.image[car.row : car.row + car.length, car.col] = [0, car.color1, car.color2]
 
-        # the red car is always the last car in the car_list
+        # the red car is always the last car in the car_list, the red car is always horizontal
         red_car = self.car_list[-1]
         self.image[red_car.row, red_car.col : red_car.col + red_car.length] = [1, 0, 0]
-
 
         plt.imshow(self.image)
         plt.show()
