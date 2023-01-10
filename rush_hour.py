@@ -107,6 +107,14 @@ class Experiment():
 
         return lower_range, upper_range
 
+    def path_red(self, car):
+        """
+        function which finds the distance to the exit for the red car
+        """
+
+        #no need to check the orientation because will always move horizontal towards the exit (one way is a contstraint)
+        number_of_spaces = self.size - car.row
+        return number_of_spaces
 
 
     def random_step(self, lower_range, upper_range, car):
@@ -126,6 +134,9 @@ class Experiment():
         else:
             car.row += difference
 
+        #print the length to the exit
+        print(self.path_red(self.car_list[-1]))
+
 
     def main_random(self, iterations):
         '''
@@ -143,6 +154,10 @@ class Experiment():
                 lower_range, upper_range = self.check_movement(car)
 
             self.random_step(lower_range, upper_range, car)
+
+
+
+
 
 
 my_experiment = Experiment(6, csv_file)
