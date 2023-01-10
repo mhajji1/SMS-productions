@@ -12,11 +12,14 @@ class Car():
         self.col = col - 1
         self.row = row - 1
         self.length = length
-        self.color1 = random.random()
-        self.color2 = random.random()
+        self.color = [0, random.random(), random.random()]
 
-    def step(self):
-        random_value = random.random()
+
+class RedCar(Car):
+
+    def __init__(self, orientation, col, row, length):
+        super().__init__(orientation, col, row, length)
+        self.color = [1,0,0]
 
 
 class Experiment():
@@ -28,36 +31,101 @@ class Experiment():
 
     def open_file(self):
         self.data = pd.read_csv(self.input)
-        print(self.data)
 
         for key, line in self.data.iterrows():
-            car = Car(line['orientation'], line['col'], line['row'], line['length'])
-            self.car_list.append(car)
-        print(self.car_list)
-
+            if line['car'] != 'X':
+                key = Car(line['orientation'], line['col'], line['row'], line['length'])
+                self.car_list.append(key)
+            else:
+                key = RedCar(line['orientation'], line['col'], line['row'], line['length'])
+                self.car_list.append(key)
 
     def visualize(self):
 
         # three for three rgb values
         self.image = np.ones((self.size, self.size, 3))
 
-        for car in self.car_list[:-1]:
+        for car in self.car_list:
 
-            # color the cars, but keep the red value zero to make sure it is easily distingueshable from the red car
+            # color the cars
             if car.orientation == 'H':
-                self.image[car.row, car.col : car.col + car.length] = [0, car.color1, car.color2]
+                self.image[car.row, car.col : car.col + car.length] = car.color
             else:
-                self.image[car.row : car.row + car.length, car.col] = [0, car.color1, car.color2]
-
-        # the red car is always the last car in the car_list, the red car is always horizontal
-        red_car = self.car_list[-1]
-        self.image[red_car.row, red_car.col : red_car.col + red_car.length] = [1, 0, 0]
+                self.image[car.row : car.row + car.length, car.col] = car.color
 
         plt.imshow(self.image)
-        plt.show()
+        plt.draw()
+        plt.pause(0.01)
+
+
+    def random_step(self):
+
+        upper_range = 0
+        lower_range = 0
+
+        while lower_range == 0 and upper_range == 0:
+
+
+            random_index = random.randrange(len(self.car_list))
+            car = self.car_list[random_index]
+
+
+            if car.orientation == 'H':
+
+                # only use the row, because that is the only information needed
+                # for a random car
+                col = self.image[car.row, :]
+
+                for x, i in enumerate(range(car.col + car.length, self.size)):
+
+                    if sum(col[i]) != 3:
+                        break
+                    upper_range = x + 1
+
+
+                for y, j in enumerate(range(car.col - 1, -1, -1)):
+
+                    if sum(col[j]) != 3:
+                        break
+                    lower_range = -(y + 1)
+
+
+                if lower_range != 0 or upper_range != 0:
+                    difference = 0
+                    while difference == 0:
+
+                        difference = random.randrange(lower_range, upper_range + 1)
+                    car.col += difference
+
+
+            else:
+
+                row = self.image[:, car.col]
+
+                for x, i in enumerate(range(car.row + car.length, self.size)):
+
+                    if sum(row[i]) != 3:
+                        break
+                    upper_range = x + 1
+
+                for y, j in enumerate(range(car.row - 1, -1, -1)):
+
+                    if sum(row[j]) != 3:
+                        break
+                    lower_range = -(y + 1)
+
+                if lower_range != 0 or upper_range != 0:
+
+                    difference = 0
+                    while difference == 0:
+
+                        difference = random.randrange(lower_range, upper_range + 1)
+                    car.row += difference
 
 
 #if __name__ == '__main__':
 my_experiment = Experiment(6, csv_file)
 my_experiment.open_file()
-my_experiment.visualize()
+for i in range(100):
+    my_experiment.visualize()
+    my_experiment.random_step()
