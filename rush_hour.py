@@ -68,7 +68,7 @@ class Experiment():
         '''
         This function picks a random car
         '''
-        random_index = random.randrange(len(self.car_list))
+        random_index = random.randrange(len(self.car_list[:-1]))
         car = self.car_list[random_index]
 
         return car
@@ -151,6 +151,8 @@ class Experiment():
 
             while lower_range == 0 and upper_range == 0:
                 car = self.random_car()
+                red_car = self.car_list[-1]
+                lower_red, upper_red = self.check_movement(red_car)
                 lower_range, upper_range = self.check_movement(car)
 
             self.random_step(lower_range, upper_range, car)
