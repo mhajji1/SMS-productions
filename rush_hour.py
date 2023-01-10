@@ -28,6 +28,8 @@ class Experiment():
         self.size = size
         self.input = input
         self.car_list = []
+        self.open_file()
+
 
     def open_file(self):
         self.data = pd.read_csv(self.input)
@@ -40,92 +42,108 @@ class Experiment():
                 key = RedCar(line['orientation'], line['col'], line['row'], line['length'])
                 self.car_list.append(key)
 
-    def visualize(self):
 
-        # three for three rgb values
+    def visualize(self):
+        '''
+        This function visualizes the board
+        '''
+
+        # create an image of appropiate size with RGB values
         self.image = np.ones((self.size, self.size, 3))
 
+        # color the cars
         for car in self.car_list:
-
-            # color the cars
             if car.orientation == 'H':
                 self.image[car.row, car.col : car.col + car.length] = car.color
             else:
                 self.image[car.row : car.row + car.length, car.col] = car.color
 
+        # draw the image
         plt.imshow(self.image)
         plt.draw()
         plt.pause(0.01)
 
 
-    def random_step(self):
+    def random_car(self):
+        '''
+        This function picks a random car
+        '''
+        random_index = random.randrange(len(self.car_list))
+        car = self.car_list[random_index]
+
+        return car
+
+
+    def check_movement(self, car):
+        '''
+        This function checks the which spaces are available
+        '''
 
         upper_range = 0
         lower_range = 0
 
-        while lower_range == 0 and upper_range == 0:
+        # change variables for H, horizontal and else vertical cars
+        if car.orientation == 'H':
+            line = self.image[car.row, :]
+            height = car.col
+        else:
+            line = self.image[:, car.col]
+            height = car.row
+
+        # check all available spaces in the positive direction
+        for x, i in enumerate(range(height + car.length, self.size)):
+
+            # the sum of [1,1,1] is three (meaning a white space, thus available)
+            if sum(line[i]) != 3:
+                break
+            upper_range = x + 1
+
+        # check all available spaces in the negative direction
+        for y, j in enumerate(range(height - 1, -1, -1)):
+
+            if sum(line[j]) != 3:
+                break
+            lower_range = -(y + 1)
+
+        return lower_range, upper_range
 
 
-            random_index = random.randrange(len(self.car_list))
-            car = self.car_list[random_index]
+
+    def random_step(self, lower_range, upper_range, car):
+        '''
+        Take a random step within a range of free spaces
+        '''
+
+        # This while loop is to make sure the car does not stay still
+        difference = 0
+
+        while difference == 0:
+            difference = random.randrange(lower_range, upper_range + 1)
+
+        # add the difference to the car
+        if car.orientation == 'H':
+            car.col += difference
+        else:
+            car.row += difference
 
 
-            if car.orientation == 'H':
+    def main_random(self, iterations):
+        '''
+        This function runs all commands in order to run the random simulation
+        '''
 
-                # only use the row, because that is the only information needed
-                # for a random car
-                col = self.image[car.row, :]
+        for i in range(iterations):
 
-                for x, i in enumerate(range(car.col + car.length, self.size)):
+            lower_range = 0
+            upper_range = 0
+            my_experiment.visualize()
 
-                    if sum(col[i]) != 3:
-                        break
-                    upper_range = x + 1
+            while lower_range == 0 and upper_range == 0:
+                car = self.random_car()
+                lower_range, upper_range = self.check_movement(car)
 
-
-                for y, j in enumerate(range(car.col - 1, -1, -1)):
-
-                    if sum(col[j]) != 3:
-                        break
-                    lower_range = -(y + 1)
+            self.random_step(lower_range, upper_range, car)
 
 
-                if lower_range != 0 or upper_range != 0:
-                    difference = 0
-                    while difference == 0:
-
-                        difference = random.randrange(lower_range, upper_range + 1)
-                    car.col += difference
-
-
-            else:
-
-                row = self.image[:, car.col]
-
-                for x, i in enumerate(range(car.row + car.length, self.size)):
-
-                    if sum(row[i]) != 3:
-                        break
-                    upper_range = x + 1
-
-                for y, j in enumerate(range(car.row - 1, -1, -1)):
-
-                    if sum(row[j]) != 3:
-                        break
-                    lower_range = -(y + 1)
-
-                if lower_range != 0 or upper_range != 0:
-
-                    difference = 0
-                    while difference == 0:
-
-                        difference = random.randrange(lower_range, upper_range + 1)
-                    car.row += difference
-
-
-#if __name__ == '__main__':
 my_experiment = Experiment(6, csv_file)
-my_experiment.open_file()
-for i in range(100):
-    my_experiment.visualize()
-    my_experiment.random_step()
+my_experiment.main_random(50)
