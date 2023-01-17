@@ -40,7 +40,7 @@ if __name__ == '__main__':
     print(f"the average number of moves is {average}, the maximum total moves is {max} and the least number of moves is {min}")
 
     # plot the values on a graph
-    plt.hist(number_of_moves)
+    plt.hist(number_of_moves, bins = 100)
     plt.title("distribution of means")
     plt.xlabel("the number of moves until it's in the winning position")
     plt.ylabel("the number of simuilations at a given position")
