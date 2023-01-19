@@ -2,6 +2,7 @@ from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
+from tqdm.tqdm import tqdm
 import pandas as pd
 
 
@@ -51,7 +52,7 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    for i in range(2000):
+    for i in tqdm(range(2000)):
 
         car_list_1 = open_file('data/Rushhour6x6_2.csv')
         test = Greedy(car_list_1, 6)
