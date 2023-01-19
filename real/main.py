@@ -2,7 +2,7 @@ from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
-from tqdm.tqdm import tqdm
+from tqdm import tqdm
 import pandas as pd
 
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         output = test.main_greedy_4(100000)
         if output != None:
             if output < low:
-                print(output)
+
                 low = output
                 moves = test.made_moves
 
