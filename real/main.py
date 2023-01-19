@@ -1,4 +1,5 @@
 from code.algorithms.randomize import RandomAlgorithm
+from code.algorithms.greedy import Greedy
 from code.classes.car import Car, RedCar
 import pandas as pd
 
@@ -21,28 +22,47 @@ def open_file(input):
 if __name__ == '__main__':
 
 
-    number_of_moves = []
+
 
     # --------------------------- Random movement --------------------------
-    for i in range(1000):
+    # for i in range(1000):
+    #     car_list_1 = open_file('data/Rushhour6x6_2.csv')
+    #     test = RandomAlgorithm(car_list_1, 6)
+    #     test.main_random(100000)
+    #     number_of_moves.append(len(test.made_moves))
+    # print(test.made_moves)
+    #
+    # #perform analysis
+    # import matplotlib.pyplot as plt
+    # #make the average
+    # average = sum(number_of_moves)/len(number_of_moves)
+    # max = max(number_of_moves)
+    # min = min(number_of_moves)
+    # print(f"the average number of moves is {average}, the maximum total moves is {max} and the least number of moves is {min}")
+    #
+    # # plot the values on a graph
+    # plt.hist(number_of_moves, bins = 100)
+    # plt.title("distribution of means")
+    # plt.xlabel("the number of moves until it's in the winning position")
+    # plt.ylabel("the number of simuilations at a given position")
+    #
+    # plt.show()
+
+    number_of_moves = []
+    low = 100000
+    for i in range(100):
+        print(i)
         car_list_1 = open_file('data/Rushhour6x6_2.csv')
-        test = RandomAlgorithm(car_list_1, 6)
-        test.main_random(100000)
+        test = Greedy(car_list_1, 6)
+        output = test.main_greedy_4(100000)
+        if output != None:
+            if output < low:
+                print(output)
+                low = output
+                moves = test.made_moves
+
         number_of_moves.append(len(test.made_moves))
-    print(test.made_moves)
-
-    #perform analysis
-    import matplotlib.pyplot as plt
-    #make the average
+    print(moves)
+    print(f"The lowest amount of moves was {low}")
     average = sum(number_of_moves)/len(number_of_moves)
-    max = max(number_of_moves)
-    min = min(number_of_moves)
-    print(f"the average number of moves is {average}, the maximum total moves is {max} and the least number of moves is {min}")
-
-    # plot the values on a graph
-    plt.hist(number_of_moves, bins = 100)
-    plt.title("distribution of means")
-    plt.xlabel("the number of moves until it's in the winning position")
-    plt.ylabel("the number of simuilations at a given position")
-
-    plt.show()
+    print(f"the average number of moves is {average}")
