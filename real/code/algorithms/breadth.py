@@ -24,23 +24,23 @@ class Breadth():
             lower_range, upper_range = board.check_movement(car)
 
             # This while loop is to make sure the car does not stay still
-            difference = 0
-
             for difference in range(lower_range, upper_range + 1):
+                if difference != 0:
+                    # adds the difference to the car
+                    if car.orientation == 'H':
+                        car.col += difference
 
-                # adds the difference to the car
-                if car.orientation == 'H':
-                    car.col += difference
+                    else:
+                        car.row += difference
 
-                else:
-                    car.row += difference
+                    board2 = board.draw_board()
+                    # print(car.name)
+                    # print(board2)
 
-                board2 = board.draw_board()
-                # print(car.name)
-                # print(board2)
+                    # creates a list of multiple loops where every car makes every move it can make
+                    board_list.append([car.name, board2])
 
-                # creates a list of multiple loops where every car makes every move it can make
-                board_list.append([car.name, board2])
+        print(board_list)
         return board_list
 
     def check_win(self, board):
@@ -69,7 +69,9 @@ class Breadth():
         while not q.empty():
             # Get the next board object from the queue
             current_board = q.get()
-            print(current_board) ''' hier heb ik een probleem, die .get() pakt de object en een getal waardoor de rest van de code niet wilt werken'''
+            print(current_board)
+
+            """hier heb ik een probleem, die .get() pakt de object en een getal waardoor de rest van de code niet wilt werken"""
             # Get the current board state as a numpy array
             current_board_numpy = current_board.draw_board()
             # Check if the current board state is the goal state
