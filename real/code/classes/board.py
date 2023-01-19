@@ -7,7 +7,7 @@ class Board:
         self.car_list = car_list
 
 
-    def draw_board(self):
+    def draw_board(self, return_board = False):
 
         self.board = np.zeros((self.size, self.size), dtype=int)
 
@@ -16,6 +16,9 @@ class Board:
                 self.board[car.row, car.col : car.col + car.length] = car.name
             else:
                 self.board[car.row : car.row + car.length, car.col] = car.name
+                
+        if return_board:
+            return self.board
 
 
 
@@ -62,6 +65,7 @@ class Board:
 
         # check all available spaces in the negative direction
         for y, j in enumerate(range(height - 1, -1, -1)):
+
 
             if line[j] != 0:
 

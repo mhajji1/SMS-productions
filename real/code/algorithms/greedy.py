@@ -141,6 +141,7 @@ class Greedy:
 
                 if counter >= 40:
                     car = self.last_car
+                    lower_range, upper_range = board.check_movement(car)
                 self.random_step(lower_range, upper_range, car)
                 self.last_car = car
 
@@ -175,6 +176,8 @@ class Greedy:
 
             if counter >= 40:
                 car = self.last_car
+                lower_range, upper_range = board.check_movement(car)
+
             self.random_step(lower_range, upper_range, car)
             self.last_car = car
 
