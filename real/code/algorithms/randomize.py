@@ -53,7 +53,7 @@ class RandomAlgorithm:
 
             lower_range = 0
             upper_range = 0
-
+ 
             board.draw_board()
 
             if board.check_win() == True:
