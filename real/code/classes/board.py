@@ -6,6 +6,7 @@ class Board:
     def __init__(self, size, car_list):
         self.size = size
         self.car_list = car_list
+        self.moves = []
 
 
     def draw_board(self, return_cars = False):

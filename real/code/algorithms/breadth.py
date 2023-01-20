@@ -11,7 +11,8 @@ class Breadth():
         self.size = size
         self.car_list = car_list
         self.win = False
-        self.winning_board = None
+        self.states = set()
+        self.winning_moves = None
 
 
 
@@ -21,7 +22,7 @@ class Breadth():
         '''
         board_list = []
 
-        board.draw_board()
+        self.states.add(str(board.draw_board(return_cars = True)))
 
         for i, car in enumerate(board.car_list):
 
@@ -38,17 +39,23 @@ class Breadth():
 
                     if car.orientation == 'H':
                         board2.car_list[i].col += difference
+                        board2.moves.append((car.name, difference))
 
                     else:
                         board2.car_list[i].row += difference
+                        board2.moves.append((car.name, difference))
 
-                    board2.draw_board()
+                    state = str(board2.draw_board(return_cars = True))
+                    if state not in self.states:
+                        board_list.append(board2)
+                        self.states.add(state)
+
                     if board2.check_win():
                         self.win = True
-                        self.winning_board = board2.board
+                        self.winning_moves = board2.moves
                         return
-                    # creates a list of multiple loops where every car makes every move it can make
-                    board_list.append(board2)
+
+
 
         return board_list
 
@@ -59,6 +66,8 @@ class Breadth():
 
         board = Board(self.size, self.car_list)
         _list = self.every_step(board)
+
+        previous_states = set()
 
         while self.win == False:
 
@@ -71,6 +80,10 @@ class Breadth():
                 #     print(individual_board)
 
                 temporary_list = self.every_step(individual_board)
+
+                if self.win == True:
+                    return self.winning_moves
+
                 next_layer.extend(temporary_list)
                 #print(next_layer)
 
