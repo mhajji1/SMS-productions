@@ -66,7 +66,7 @@ class Greedy:
 
 
     def list_movement(self, board, indeces):
-
+        # only works in one direction
         if indeces == None:
             return False
 
@@ -89,6 +89,67 @@ class Greedy:
                 indeces.append(i)
 
         return indeces
+
+
+    def main_greedy_5(self, max_iterations = 10000):
+
+        board = Board(self.size, self.car_list)
+        car = self.random_car(board)
+
+        vertical_trucks_i = self.return_states(3, 'V')
+        horizontal_cars_i = self.return_states(2, 'H')
+        horizontal_trucks_i = self.return_states(3, 'H')
+        horizontal_i = horizontal_trucks_i.extend(horizontal_cars_i)
+
+        for i in range(max_iterations):
+
+            board.draw_board()
+
+            if board.check_win() == True:
+
+                return i
+
+            lower, upper = board.check_movement(board.car_list[-1])
+            chance = random.random()
+
+            # if upper > 0 and self.last_car != board.car_list[-1] and chance > 0.98:
+            #     self.max_step(upper, board.car_list[-1])
+            #     self.last_car = board.car_list[-1]
+            #     #print('red')
+
+            if self.list_movement(board, horizontal_cars_i) and self.last_car != self.current_car and chance > 0.6:
+                self.max_step(board.check_movement(self.current_car)[0], self.current_car)
+                self.last_car = self.current_car
+                #print('car')
+
+            elif self.list_movement(board, vertical_trucks_i) and self.last_car != self.current_car and chance > 0.3:
+                #print("truck")
+                self.max_step(board.check_movement(self.current_car)[0], self.current_car)
+                self.last_car = self.current_car
+
+            elif lower < 0 and self.last_car != board.car_list[-1] and chance < 0.1:
+                self.max_step(lower, board.car_list[-1])
+                self.last_car = board.car_list[-1]
+                #print('red')
+
+            else:
+                lower_range = 0
+                upper_range = 0
+                counter = 0
+                #print('random')
+
+                while lower_range == 0 and upper_range == 0 or car == self.last_car and counter < 40:
+
+                    car = self.random_car(board)
+                    lower_range, upper_range = board.check_movement(car)
+                    counter += 1
+
+
+                if counter >= 40:
+                    car = self.last_car
+                    lower_range, upper_range = board.check_movement(car)
+                self.random_step(lower_range, upper_range, car)
+                self.last_car = car
 
 
     def main_greedy_4(self, max_iterations = 10000):

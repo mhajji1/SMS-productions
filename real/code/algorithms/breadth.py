@@ -5,10 +5,12 @@ from ..classes.board import Board
 
 class Breadth():
 
-    def __init__(self, depth, size, car_list):
-        self.depth = depth
+    def __init__(self, car_list, size):
+        # self.depth = depth
         self.size = size
         self.car_list = car_list
+        self.win = False
+        self.winning_board = None
 
 
 
@@ -18,48 +20,71 @@ class Breadth():
         '''
         board_list = []
 
-        for car in self.car_list:
+        board.draw_board()
+
+        for i, car in enumerate(board.car_list):
 
             # Determines the possible movements the car can take
             lower_range, upper_range = board.check_movement(car)
+            # print(car.name, lower_range, upper_range)
 
             # This while loop is to make sure the car does not stay still
             for difference in range(lower_range, upper_range + 1):
                 if difference != 0:
+
                     # adds the difference to the car
+                    board2 = deepcopy(board)
+
                     if car.orientation == 'H':
-                        car.col += difference
+                        board2.car_list[i].col += difference
 
                     else:
-                        car.row += difference
+                        board2.car_list[i].row += difference
 
-                    board2 = board.draw_board()
-                    # print(car.name)
-                    # print(board2)
-
+                    board2.draw_board()
+                    if board2.check_win():
+                        self.win = True
+                        self.winning_board = board2.board
+                        return
                     # creates a list of multiple loops where every car makes every move it can make
-                    board_list.append([car.name, board2])
+                    board_list.append(board2)
 
-        print(board_list)
         return board_list
 
-    def check_win(self, board):
 
-        red_car = self.car_list[-1]
-        line = board[red_car.row, :]
 
-        for x, i in enumerate(range(red_car.col + red_car.length, self.size)):
 
-            if line[i] != 0:
-                return False
-        # if all places in front are zero, the game is won
-        return True
+    def run(self):
+        counter = 1
+
+        board = Board(self.size, self.car_list)
+        _list = self.every_step(board)
+
+        while self.win == False:
+
+            next_layer = []
+            counter += 1
+            print(counter)
+
+            for individual_board in _list:
+                # if counter == 2:
+                #     print(individual_board)
+
+                temporary_list = self.every_step(individual_board)
+                next_layer.extend(temporary_list)
+                #print(next_layer)
+
+            _list = next_layer
+            print(len(_list))
+
+
+
 
     def rush_hour(self):
         # Create the initial board object
         board = Board(self.size, self.car_list)
         # Get the initial board state as a numpy array
-        board_numpy = board.draw_board()
+
         # Initialize the queue with the current board state
         q = queue.Queue()
         q.put(board)

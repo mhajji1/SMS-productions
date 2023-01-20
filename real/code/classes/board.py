@@ -2,12 +2,13 @@ from .car import Car, RedCar
 import numpy as np
 
 class Board:
+
     def __init__(self, size, car_list):
         self.size = size
         self.car_list = car_list
 
 
-    def draw_board(self, return_board = False):
+    def draw_board(self, return_cars = False):
 
         self.board = np.zeros((self.size, self.size), dtype=int)
 
@@ -16,8 +17,8 @@ class Board:
                 self.board[car.row, car.col : car.col + car.length] = car.name
             else:
                 self.board[car.row : car.row + car.length, car.col] = car.name
-                
-        if return_board:
+
+        if return_cars:
             return self.board
 
 
@@ -33,6 +34,12 @@ class Board:
                 return False
         # if all places in front are zero, the game is won
         return True
+
+    def __repr__(self):
+        """
+        Make sure that the object is printed properly if it is in a list/dict.
+        """
+        return f'{self.board}' + '\n'
 
 
     def check_movement(self, car, return_cars=False):
