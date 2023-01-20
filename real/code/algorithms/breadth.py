@@ -2,6 +2,7 @@ import queue
 from copy import deepcopy
 from .randomize import RandomAlgorithm
 from ..classes.board import Board
+from tqdm import tqdm
 
 class Breadth():
 
@@ -53,7 +54,6 @@ class Breadth():
 
 
 
-
     def run(self):
         counter = 1
 
@@ -66,7 +66,7 @@ class Breadth():
             counter += 1
             print(counter)
 
-            for individual_board in _list:
+            for individual_board in tqdm(_list):
                 # if counter == 2:
                 #     print(individual_board)
 
