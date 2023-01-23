@@ -1,6 +1,7 @@
 from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
+from code.algorithms.depth import Depth
 from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
@@ -68,15 +69,17 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour9x9_4.csv'
-    size = 9
+    input = 'data/Rushhour6x6_2.csv'
+    size = 6
 
+    # car_list_1 = open_file(input)
+    # test = Breadth(car_list_1, size)
+    # moves = test.run()
+    # visualise(moves, open_file(input), size)
 
     car_list_1 = open_file(input)
-    test = Breadth(car_list_1, size)
-    moves = test.run()
-    visualise(moves, open_file(input), size)
-
+    test = Depth(car_list_1, size)
+    moves = test.depth_step()
 
 
     # for i in tqdm(range(100)):
