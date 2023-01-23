@@ -53,11 +53,12 @@ class Depth():
         return board_list
 
 
-    def depth_step(self, max_steps=200):
+    def depth_step(self, max_steps=50000):
         count = 0
         board = Board(self.size, self.car_list)
         stack = self.stack_moves(board)
         current_list = deepcopy(stack)
+
         step_count = 0
         visited = set()
 
@@ -66,10 +67,12 @@ class Depth():
             for i, board2 in enumerate(current_list):
                 state = tuple(board2.board.flatten())
                 print(len(current_list))
+
                 if state not in visited:
                     visited.add(state)
                     step_count += 1
                     print(step_count)
+
                     if step_count > max_steps:
                         break
                     print(board2)
