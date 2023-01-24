@@ -106,8 +106,8 @@ class Greedy:
             board.draw_board()
 
             if board.check_win() == True:
-
-                return i
+                print(i)
+                return self.made_moves
 
             lower, upper = board.check_movement(board.car_list[-1])
             chance = random.random()
@@ -168,7 +168,7 @@ class Greedy:
 
             if board.check_win() == True:
 
-                return i
+                return self.made_moves
 
             lower, upper = board.check_movement(board.car_list[-1])
             chance = random.random()

@@ -40,9 +40,10 @@ class Depth():
 
                     if car.orientation == 'H':
                         board2.car_list[i].col += difference
-
+                        board2.moves.append((car.name, difference))
                     else:
                         board2.car_list[i].row += difference
+                        board2.moves.append((car.name, difference))
 
                     board2.draw_board()
                     if board2.check_win():

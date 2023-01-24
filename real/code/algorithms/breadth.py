@@ -67,7 +67,6 @@ class Breadth():
         board = Board(self.size, self.car_list)
         _list = self.every_step(board)
 
-        previous_states = set()
 
         while self.win == False:
 
@@ -85,7 +84,7 @@ class Breadth():
                     return self.winning_moves
 
                 next_layer.extend(temporary_list)
-                #print(next_layer)
+
 
             _list = next_layer
             print(len(_list))
