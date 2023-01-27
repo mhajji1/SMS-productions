@@ -6,14 +6,13 @@ from tqdm import tqdm
 
 class Breadth():
 
-    def __init__(self, car_list, size):
-        # self.depth = depth
+    def __init__(self, full_list, car_list, size):
         self.size = size
+        self.full_list = full_list
         self.car_list = car_list
         self.win = False
         self.states = set()
         self.winning_moves = None
-
 
 
     def every_step(self, board):
@@ -22,61 +21,47 @@ class Breadth():
         '''
         board_list = []
 
-        self.states.add(str(board.draw_board(return_cars = True)))
+        self.states.add(str(board.draw_board(self.size, self.full_list, return_board = True)))
 
-        for i, car in enumerate(board.car_list):
+        for car_number, car in enumerate(self.full_list):
 
             # Determines the possible movements the car can take
-            lower_range, upper_range = board.check_movement(car)
-            # print(car.name, lower_range, upper_range)
+            lower_range, upper_range = board.check_movement(self.size, car, car_number)
+            #print(car_number + 1, lower_range, upper_range)
 
             # This while loop is to make sure the car does not stay still
-            for difference in range(lower_range, upper_range + 1):
-                if difference != 0:
-
-                    # adds the difference to the car
-                    board2 = deepcopy(board)
-
-                    if car.orientation == 'H':
-                        board2.car_list[i].col += difference
-                        board2.moves.append((car.name, difference))
-
-                    else:
-                        board2.car_list[i].row += difference
-                        board2.moves.append((car.name, difference))
-
-                    state = str(board2.draw_board(return_cars = True))
-                    if state not in self.states:
-                        board_list.append(board2)
-                        self.states.add(state)
-
-                    if board2.check_win():
-                        self.win = True
-                        self.winning_moves = board2.moves
-                        return
+            for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:
 
 
+                # adds the difference to the car
+                new_board = deepcopy(board)
+                new_board.add_move(car_number, difference)
+
+                state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
+
+                if new_board.check_win(self.size, self.full_list[-1]):
+                    self.win = True
+                    self.winning_moves = new_board.moves
+                    print(self.winning_moves)
+                    return
+
+                if state not in self.states:
+                    board_list.append(new_board)
+                    self.states.add(state)
 
         return board_list
 
 
-
     def run(self):
-        counter = 1
 
-        board = Board(self.size, self.car_list)
+        board = Board(self.car_list)
         _list = self.every_step(board)
-
 
         while self.win == False:
 
             next_layer = []
-            counter += 1
-            print(counter)
 
             for individual_board in tqdm(_list):
-                # if counter == 2:
-                #     print(individual_board)
 
                 temporary_list = self.every_step(individual_board)
 
@@ -85,41 +70,4 @@ class Breadth():
 
                 next_layer.extend(temporary_list)
 
-
             _list = next_layer
-            print(len(_list))
-
-
-
-
-    def rush_hour(self):
-        # Create the initial board object
-        board = Board(self.size, self.car_list)
-        # Get the initial board state as a numpy array
-
-        # Initialize the queue with the current board state
-        q = queue.Queue()
-        q.put(board)
-        # Keep track of the states we have already visited
-        visited = set()
-
-        while not q.empty():
-            # Get the next board object from the queue
-            current_board = q.get()
-            print(current_board)
-
-            """hier heb ik een probleem, die .get() pakt de object en een getal waardoor de rest van de code niet wilt werken"""
-            # Get the current board state as a numpy array
-            current_board_numpy = current_board.draw_board()
-            # Check if the current board state is the goal state
-            if self.check_win(current_board_numpy):
-                return current_board_numpy
-            # Mark the current board state as visited
-            visited.add(hash(str(current_board_numpy)))
-            # Generate all possible next moves
-            for next_board in self.every_step(current_board):
-                next_board_numpy = next_board[1]
-                # Check if the next board state has already been visited
-                if hash(str(next_board_numpy)) not in visited:
-                    # Add the next board state to the queue
-                    q.put(next_board[0])
