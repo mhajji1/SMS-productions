@@ -90,10 +90,14 @@ if __name__ == '__main__':
     # moves = test.run()
     # visualise(moves, open_file(input), size)
 
+    # car_list_1 = open_file(input)
+    # test = Breadth(car_list_1, size)
+    # moves = test.run()
+    # visualise(moves,open_file(input),size)
+
     car_list_1 = open_file(input)
-    test = Breadth(car_list_1, size)
-    moves = test.run()
-    visualise(moves,open_file(input),size)
+    test = BB(car_list_1, size)
+    test.branch_and_bound()
 
 
     # for i in tqdm(range(100)):
