@@ -8,7 +8,7 @@ class Board:
         self.moves = moves
 
 
-    def draw_board(self, size, full_list, return_board = False):
+    def draw_board(self, size, full_list):
         '''
         This function draws a np matrix from the board,
         where empty is zero and the cars have a number
@@ -24,8 +24,28 @@ class Board:
             else:
                 self.board[car_coords : car_coords + car.length, car.col] = car.name
 
-        if return_board:
-            return self.board
+        return str(self.car_list).replace(',', '')[1:-1]
+
+    def update_board(self, car_number, car, difference):
+        '''
+        This function only redraws the appropiate car
+        '''
+
+        if car.orientation == 'H':
+            # replace the old coordinates with 0
+            self.board[car.row, self.car_list[car_number] : self.car_list[car_number] + car.length] = 0
+            self.add_move(car_number, difference)
+            # draw the new coordinates
+            self.board[car.row, self.car_list[car_number] : self.car_list[car_number] + car.length] = car.name
+
+        else:
+            # replace the old coordinates with 0
+            self.board[self.car_list[car_number] : self.car_list[car_number] + car.length, car.col] = 0
+            self.add_move(car_number, difference)
+            # draw the new coordinates
+            self.board[self.car_list[car_number] : self.car_list[car_number] + car.length, car.col] = car.name
+
+        return str(self.car_list).replace(',', '')[1:-1]
 
 
     def add_move(self, car_number, difference):
@@ -41,11 +61,9 @@ class Board:
         '''
         This function returns if the path for the red car is clear
         '''
-        relevant_coord = self.car_list[-1]
 
-        if sum(self.board[red_car.row, relevant_coord + red_car.length:]) == 0:
+        if sum(self.board[red_car.row, self.car_list[-1] + red_car.length:]) == 0:
             return True
-
 
 
     def check_movement(self, size, car, car_number):

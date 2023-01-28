@@ -21,7 +21,7 @@ class Breadth():
         '''
         board_list = []
 
-        self.states.add(str(board.draw_board(self.size, self.full_list, return_board = True)))
+        self.states.add(board.draw_board(self.size, self.full_list))
 
         for car_number, car in enumerate(self.full_list):
 
@@ -35,19 +35,21 @@ class Breadth():
 
                 # adds the difference to the car
                 new_board = deepcopy(board)
-                new_board.add_move(car_number, difference)
-
-                state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
-
-                if new_board.check_win(self.size, self.full_list[-1]):
-                    self.win = True
-                    self.winning_moves = new_board.moves
-                    print(self.winning_moves)
-                    return
+                # new_board.add_move(car_number, difference)
+                # #
+                # state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
+                state = str(new_board.update_board(car_number, car, difference))
 
                 if state not in self.states:
                     board_list.append(new_board)
                     self.states.add(state)
+
+                    if new_board.check_win(self.size, self.full_list[-1]):
+                        self.win = True
+                        self.winning_moves = new_board.moves
+                        print(self.winning_moves)
+                        # return something
+                        return [0]
 
         return board_list
 
@@ -64,10 +66,9 @@ class Breadth():
             for individual_board in tqdm(_list):
 
                 temporary_list = self.every_step(individual_board)
-
-                if self.win == True:
-                    return self.winning_moves
-
                 next_layer.extend(temporary_list)
 
             _list = next_layer
+
+        else:
+            return self.winning_moves

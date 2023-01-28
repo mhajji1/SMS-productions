@@ -6,6 +6,7 @@ from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
 import pandas as pd
+import time
 
 
 def open_file(input):
@@ -101,7 +102,7 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour9x9_5.csv'
+    input = 'data/Rushhour9x9_4.csv'
     size = 9
 
     # car_list_1 = open_file(input)
@@ -111,7 +112,10 @@ if __name__ == '__main__':
 
     car_list, other_list = open_file2(input)
     test = Breadth(other_list, car_list, size)
+    start = time.time()
     moves = test.run()
+    end = time.time()
+    print(f"The processing time for this board was: {end - start}")
     visualise(moves, open_file2(input)[1], size)
 
 
