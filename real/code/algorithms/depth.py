@@ -5,25 +5,31 @@ from .randomize import RandomAlgorithm
 from collections import deque
 from tqdm import tqdm
 
-class Depth():
+class BB():
 
-    def __init__(self, car_list, size):
+    def __init__(self, car_list, other_list, size):
         # self.depth = depth
         self.size = size
         self.car_list = car_list
+        self.other_list = other_list
         self.win = False
         self.winning_board = None
         self.infinite = False
+        self.depth = 10000
 
 
 
-    def stack_moves(self, board):
+    def every_move(self, board):
         '''
         shows every possible step every car can take
         '''
-        board_list = []
+        priority_board = []
+        other_board = []
 
         board.draw_board()
+        priority_cars = board.check_movement(board.car_list[-1], return_only_cars=True)
+
+        priority_cars = [car.name for car in priority_cars]
 
         for i, car in enumerate(board.car_list):
 
@@ -35,98 +41,120 @@ class Depth():
             for difference in range(lower_range, upper_range + 1):
                 if difference != 0:
 
+
                     # adds the difference to the car
                     board2 = deepcopy(board)
 
                     if car.orientation == 'H':
                         board2.car_list[i].col += difference
                         board2.moves.append((car.name, difference))
+
                     else:
                         board2.car_list[i].row += difference
                         board2.moves.append((car.name, difference))
 
                     board2.draw_board()
+                    if car.name in priority_cars:
+                        priority_board.append(board2)
+
+                    if car.name not in priority_cars:
+                        other_board.append(board2)
+
                     if board2.check_win():
+                        self.depth = len(board2.moves)
                         self.win = True
                         self.winning_board = board2.board
-                        return
+                        # return
                     # creates a list of multiple loops where every car makes every move it can make
-                    board_list.append(board2)
+
+        return priority_board, other_board
+
+    def fix_priority(self, priority_list, other_list):
+        board_list = []
+
+        if len(other_list) > 0:
+            for board in other_list:
+                board_list.append(board)
+
+        if len(priority_list) > 0:
+            for board in priority_list:
+                board_list.append(board)
 
         return board_list
 
+    def branch_and_bound(self, max_steps=25):
 
-    # def depth_step(self, max_steps=50000):
-    #
-    #     board = Board(self.size, self.car_list)
-    #     stack = self.stack_moves(board)
-    #     current_list = deepcopy(stack)
-    #     visited = set()
-    #
-    #     while self.infinite == False:
-    #
-    #         while self.win == False:
-    #
-    #             step_count = 0
-    #
-    #             for i, board2 in enumerate(current_list):
-    #                 state = tuple(board2.board.flatten())
-    #
-    #                 if state not in visited:
-    #                     visited.add(state)
-    #                     step_count += 1
-    #                     # print(step_count)
-    #
-    #                     # if step_count > max_steps:
-    #                     #     break
-    #                     # print(board2)
-    #                     new_list = self.stack_moves(board2)
-    #                     if new_list:
-    #                         copy_list = deepcopy(new_list)
-    #                         current_list[:0] = copy_list
-    #
-    #         if self.win:
-    #             print('The winner is: ')
-    #             print(step_count)
-    #             print(self.winning_board)
-    #             self.win = False
-
-    def depth_step(self, max_steps=50000):
-        count = 0
+        # Initialize a new board and a stack of moves
         board = Board(self.size, self.car_list)
-        stack = self.stack_moves(board)
-        current_list = deepcopy(stack)
-        visited = set()
+        priority, other = self.every_move(board)
+        priority_queue = self.fix_priority(priority, other)
 
+        current_list = deepcopy(priority_queue)
+
+        visited = {}
+
+        # Continue looping until the infinite flag is set to True
         while self.infinite == False:
-            step_count = 0
+
+            # Continue looping until the win flag is set to True
             while self.win == False:
 
+                # Check if there are still elements in the current list
                 if len(current_list) > 0:
+
+                    # Pop the next board from the list and convert it to a tuple
                     board2 = current_list.pop()
+                    # print(board2)
                     state = tuple(board2.board.flatten())
-                    step_count += 1
+
+                # If the list is empty, print the best result and set flags to True
                 else:
-                    print('list is empty')
+                    print('The best is:')
+                    print(f'steps: {self.depth}')
+                    print(self.winning_board)
                     self.infinite = True
                     self.win = True
+                    break
 
-                if state not in visited:
-                    visited.add(state)
-                    # print(step_count)
+                # Check if the number of moves made on the board is less than max steps
+                if len(board2.moves) < max_steps:
+                    new_list = []
 
-                    # if step_count > max_steps:
-                    #     break
-                    # print(board2)
-                    node = self.stack_moves(board2)
+                    # Check if the state has been visited before
+                    if state in visited:
+
+                        # If it has and the number of moves is less than the previous one
+                        # update the value in the visited dictionary
+                        if len(board2.moves) < visited[state]:
+                            visited[state] = len(board2.moves)
+                            p_list, o_list = self.every_move(board2)
+                            new_list = self.fix_priority(p_list, o_list)
+
+                    # If it hasn't been visited before, add it to the dictionary
+                    # with the number of moves
+                    else:
+                        visited[state] = len(board2.moves)
+                        p_list, o_list = self.every_move(board2)
+                        new_list = self.fix_priority(p_list, o_list)
+
+                    # Add the new list of moves to the current_list
                     if new_list:
-                        copy_list = deepcopy(node)
-                        current_list.extend(copy_list)
+                        current_list.extend(new_list)
 
+                # If the number of moves is less than max steps, print the number of moves and board
+                # if len(board2.moves) < max_steps:
+                #     print(len(board2.moves))
+                #     # print(board2)
+
+            # If win flag is set to true, check if the depth is less than max steps
             if self.win:
-                count += 1
-                print(count)
-                print('The winner is: ')
 
-                print(self.winning_board)
+                if self.depth < max_steps:
+                    # If it is, update max steps and print the depth
+                    max_steps = self.depth
+                    print('Found a winner at: ')
+                    print(self.depth)
+                    # print(board2.moves)
+
+                # Reset the win flag to false
                 self.win = False
