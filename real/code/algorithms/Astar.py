@@ -1,10 +1,18 @@
 from copy import deepcopy
 from ..classes.board import Board
 from tqdm import tqdm
-import heapq
-from tqdm import tqdm
 
-#
+from dataclasses import dataclass, field
+from typing import Any
+from queue import PriorityQueue
+import copy
+
+
+@dataclass(order=True)
+class PrioritizedItem:
+    priority: int
+    item: Any=field(compare=False)
+
 
 class Astar():
 
@@ -16,12 +24,13 @@ class Astar():
         self.states = {}
         self.winning_moves = None
         self.max_step = 100
+        self.queue = PriorityQueue()
 
     def every_step(self, board):
         '''
         shows every possible step every car can take
         '''
-        board_list = []
+
 
 
 
@@ -44,36 +53,29 @@ class Astar():
 
                 if state not in keys and len(new_board.moves) < self.max_step:
 
-                    new_board.score = self.calculate(new_board)
                     self.states[state] = len(new_board.moves)
 
-                    board_list.append(new_board)
+                    self.queue.put(PrioritizedItem(self.calculate(new_board),new_board))
 
 
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
                         # return something
-                        return [0]
+                        print(' win')
 
 
                 elif state in keys and len(new_board.moves) < self.states[state]:
-                    new_board.score = self.calculate(new_board)
                     self.states[state] = len(new_board.moves)
 
-                    board_list.append(new_board)
+                    self.queue.put(PrioritizedItem(self.calculate(new_board),new_board))
 
 
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
-                        # return something
-                        return [0]
-
-
-        return board_list
-
-
+                        # return someng
+                        print(' win')
 
     def calculate(self, board):
         """
@@ -126,40 +128,18 @@ class Astar():
             return 0
 
     def run(self):
-        new_list = []
+
         board = Board(self.car_list)
         board.draw_board(self.size, self.full_list)
+        self.queue.put(PrioritizedItem(self.calculate(board), board))
 
-        _list = self.every_step(board)
-
-        board.score = self.calculate(board)
-        # board.score_2 = self.heuristic_1(board)
 
         while self.win == False:
+            self.every_step(self.queue.get().item)
 
-            value = min([x.score for x in _list])
+            if self.win == True:
 
-            lowest_state = []
-            other_states = []
-            for x in _list:
-                if x.score == value:
-                    lowest_state.append(x)
-                else:
-                    other_states.append(x)
-
-            for individual_board in tqdm(lowest_state):
-                temporary_list = self.every_step(individual_board)
-                #create scores for all the boards
-
-                if self.win == True:
-
-                    self.max_step = len(self.winning_moves) - 1
-                    print(self.winning_moves)
-                    # self.win = False
-                    return self.winning_moves
-
-                #start from the one with the lowest score
-                # REMOVE THE LOWEST SCORES
-                other_states.extend(temporary_list)
-
-            _list = other_states
+                self.max_step = len(self.winning_moves) - 1
+                print(self.winning_moves)
+                # self.win = False
+                return self.winning_moves
