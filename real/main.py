@@ -2,6 +2,7 @@ from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
 from code.algorithms.depth import Depth
+from code.algorithms.Astar import Astar
 from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
@@ -102,7 +103,7 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour6x6_3.csv'
+    input = 'data/Rushhour6x6_2.csv'
     size = 6
 
     # car_list_1 = open_file(input)
@@ -110,8 +111,8 @@ if __name__ == '__main__':
     # moves = test.run()
     # visualise(moves, open_file(input), size)
 
-    car_list, other_list = open_file2(input)
-    test = Breadth(other_list, car_list, size)
+    car_list, full_list = open_file2(input)
+    test = Astar(full_list, car_list, size)
     start = time.time()
     moves = test.run()
     end = time.time()

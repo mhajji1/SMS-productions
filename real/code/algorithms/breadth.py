@@ -1,6 +1,4 @@
-import queue
 from copy import deepcopy
-from .randomize import RandomAlgorithm
 from ..classes.board import Board
 from tqdm import tqdm
 import functools
@@ -63,7 +61,7 @@ class Breadth():
 
             next_layer = []
 
-            for individual_board in _list:
+            for individual_board in tqdm(_list):
 
                 temporary_list = self.every_step(individual_board)
                 next_layer.extend(temporary_list)
