@@ -1,11 +1,15 @@
 from copy import deepcopy
 from ..classes.board import Board
+from ..algorithms.randomize import RandomAlgorithm
+
 from tqdm import tqdm
 
 from dataclasses import dataclass, field
 from typing import Any
 from queue import PriorityQueue
+import ast
 import copy
+import numpy as np
 
 
 @dataclass(order=True)
@@ -30,10 +34,6 @@ class Astar():
         '''
         shows every possible step every car can take
         '''
-
-
-
-
         for car_number, car in enumerate(self.full_list):
 
             # Determines the possible movements the car can take
@@ -111,7 +111,7 @@ class Astar():
             min_score = min([len(lower),len(upper)])
 
             #adding the manhattan distance
-            manhattan_distance = self.size - (red_car+ 1)
+            #manhattan_distance = self.size - (red_car+ 1)
 
             #adding the number of steps already taken
             steps_taken = len(board.moves)
@@ -119,16 +119,40 @@ class Astar():
             #adding the number of intersections in the puzzle
             # for i in board.car_list:
             #     counter += i.check_movement()
+            #- manhattan_distance + steps_taken
 
-            cost_function = min_score + len(numbers) - manhattan_distance + steps_taken
+
+            cost_function = min_score + len(numbers) + self.priority(board)
+
 
             return cost_function
 
         else:
             return 0
 
+    def deterimine_end_state(self):
+        carlist = deepcopy(self.car_list)
+
+        endstates = []
+        for i in range(100):
+            test = RandomAlgorithm(self.full_list, carlist, self.size)
+            endstate = test.run(1000000)
+            endstates.append(str(endstate))
+
+
+
+
+        self.common_end = np.array(ast.literal_eval(max(set(endstates), key=endstates.count)))
+
+
+    def priority(self, board):
+
+        return np.sum(np.absolute(np.array(board.car_list) - self.common_end))
+
+
     def run(self):
 
+        self.deterimine_end_state()
         board = Board(self.car_list)
         board.draw_board(self.size, self.full_list)
         self.queue.put(PrioritizedItem(self.calculate(board), board))
