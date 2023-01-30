@@ -3,6 +3,8 @@ from copy import deepcopy
 from .randomize import RandomAlgorithm
 from ..classes.board import Board
 from tqdm import tqdm
+import functools
+import operator
 
 class Breadth():
 
@@ -36,7 +38,6 @@ class Breadth():
                 # adds the difference to the car
                 new_board = deepcopy(board)
                 # new_board.add_move(car_number, difference)
-                # #
                 # state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
                 state = str(new_board.update_board(car_number, car, difference))
 
@@ -47,7 +48,6 @@ class Breadth():
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
-                        print(self.winning_moves)
                         # return something
                         return [0]
 
@@ -63,7 +63,7 @@ class Breadth():
 
             next_layer = []
 
-            for individual_board in tqdm(_list):
+            for individual_board in _list:
 
                 temporary_list = self.every_step(individual_board)
                 next_layer.extend(temporary_list)
@@ -71,4 +71,5 @@ class Breadth():
             _list = next_layer
 
         else:
+            print(self.winning_moves)
             return self.winning_moves
