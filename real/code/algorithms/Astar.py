@@ -2,16 +2,8 @@ from copy import deepcopy
 from ..classes.board import Board
 from tqdm import tqdm
 import heapq
+from tqdm import tqdm
 
-# from dataclasses import dataclass, field
-# from typing import Any
-# from queue import PriorityQueue
-# import copy
-
-# @dataclass(order=True)
-# class PrioritizedItem:
-#     priority: int
-#     item: Any=field(compare=False)
 #
 
 class Astar():
@@ -23,7 +15,7 @@ class Astar():
         self.win = False
         self.states = {}
         self.winning_moves = None
-        self.max_step = 1000
+        self.max_step = 100
 
     def every_step(self, board):
         '''
@@ -65,7 +57,7 @@ class Astar():
                         return [0]
 
 
-                elif state in keys and len(board2.moves) < self.states[state]:
+                elif state in keys and len(new_board.moves) < self.states[state]:
                     new_board.score = self.calculate(new_board)
                     self.states[state] = len(new_board.moves)
 
@@ -86,10 +78,9 @@ class Astar():
     def calculate(self, board):
         """
         In this function we can implement heuristics to improve the breadth first searh
-        1. heuristic
+        1. heuristic: check the first car of cars which blocks the red car
         2. heuristic: manhattan distance (how far is the red car from the exit)
-        3. heuristic
-        4. heuristic
+        3. heuristic: check the depth of the board it's found
 
         Calculate number of cars blocking the way for the red car
         This function only works when the board has been drawn
@@ -100,24 +91,25 @@ class Astar():
         red_car = board.car_list[-1]
 
         # plus two because of the length of the red car
-        numbers = set(board.board[red_car.row, red_car.col+red_car.length:])
+        numbers = set(board.board[self.full_list[-1].row, red_car+self.full_list[-1].length:])
 
 
         numbers.discard(0)
 
         if len(numbers) > 0:
             i = list(numbers)[0]
-            #car_list[i-1] is the car object
-            car = board.car_list[i-1]
 
-            upper = set(board.board[car.row+car.length:, car.col])
+            #car_list[i-1] is the car object
+            car = self.full_list[i-1]
+
+            upper = set(board.board[board.car_list[i-1]+car.length:, car.col])
             lower = set(board.board[:car.row-1, car.col])
             upper.discard(0)
             lower.discard(0)
             min_score = min([len(lower),len(upper)])
 
             #adding the manhattan distance
-            manhattan_distance = self.size - (red_car.col + 1)
+            manhattan_distance = self.size - (red_car+ 1)
 
             #adding the number of steps already taken
             steps_taken = len(board.moves)
@@ -126,7 +118,7 @@ class Astar():
             # for i in board.car_list:
             #     counter += i.check_movement()
 
-            cost_function = min_score + len(numbers) + manhattan_distance + steps_taken
+            cost_function = min_score + len(numbers) - manhattan_distance + steps_taken
 
             return cost_function
 
@@ -137,7 +129,7 @@ class Astar():
         new_list = []
         board = Board(self.car_list)
         board.draw_board(self.size, self.full_list)
-        
+
         _list = self.every_step(board)
 
         board.score = self.calculate(board)
@@ -146,7 +138,6 @@ class Astar():
         while self.win == False:
 
             value = min([x.score for x in _list])
-            value_2 = min([x.score_2 for x in _list])
 
             lowest_state = []
             other_states = []
@@ -156,8 +147,8 @@ class Astar():
                 else:
                     other_states.append(x)
 
-            for individual_board in lowest_state:
-                temporary_list = Breadth.every_step(individual_board)
+            for individual_board in tqdm(lowest_state):
+                temporary_list = self.every_step(individual_board)
                 #create scores for all the boards
 
                 if self.win == True:

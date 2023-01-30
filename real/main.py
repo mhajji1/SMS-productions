@@ -1,8 +1,9 @@
 from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
-from code.algorithms.depth import Depth
+from code.algorithms.depth import BB
 from code.algorithms.Astar import Astar
+from code.algorithms.Astar_update import Astar_2
 from code.classes.car import Car, RedCar
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
@@ -103,8 +104,8 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour6x6_2.csv'
-    size = 6
+    input = 'data/Rushhour12x12_7.csv'
+    size = 12
 
     # car_list_1 = open_file(input)
     # test = Breadth(car_list_1, size)
@@ -119,6 +120,7 @@ if __name__ == '__main__':
     print(f"The processing time for this board was: {end - start}")
     visualise(moves, open_file2(input)[1], size)
 
+#[(11, 1), (10, 1), (8, 3), (10, -1), (13, -1), (7, 1), (3, -1), (14, -2), (15, -2), (11, 1), (12, -1), (21, 1), (22, -2), (19, 1), (11, 3), (19, -1), (22, 2)]
 
     # for i in tqdm(range(100)):
     #
