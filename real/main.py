@@ -102,8 +102,8 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour9x9_4.csv'
-    size = 9
+    input = 'data/Rushhour6x6_3.csv'
+    size = 6
 
     # car_list_1 = open_file(input)
     # test = Breadth(car_list_1, size)
