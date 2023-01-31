@@ -77,6 +77,7 @@ class Astar():
                         # return someng
                         print(' win')
 
+
     def calculate(self, board):
         """
         In this function we can implement heuristics to improve the breadth first searh
@@ -131,18 +132,24 @@ class Astar():
             return 0
 
     def deterimine_end_state(self):
-        carlist = deepcopy(self.car_list)
 
+        individual_scores = []
         endstates = []
         for i in range(100):
+            carlist = deepcopy(self.car_list)
             test = RandomAlgorithm(self.full_list, carlist, self.size)
             endstate = test.run(1000000)
+            print(endstate)
             endstates.append(str(endstate))
+            individual_scores.append(sum(endstate))
 
 
 
 
         self.common_end = np.array(ast.literal_eval(max(set(endstates), key=endstates.count)))
+        print(self.common_end)
+        print(sum(self.common_end))
+        print(individual_scores)
 
 
     def priority(self, board):

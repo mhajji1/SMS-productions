@@ -48,12 +48,14 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour12x12_7.csv'
-    size = 12
+    input = 'data/Rushhour9x9_4.csv'
+    size = 9
 
     car_list, full_list = open_file2(input)
     test = Astar(full_list, car_list, size)
+    start = time.time()
     moves = test.run()
+    print(time.time()-start)
 
     visualise(moves, open_file2(input)[1], size)
     #final_board = mode(endstates)
