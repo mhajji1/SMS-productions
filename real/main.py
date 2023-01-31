@@ -1,7 +1,7 @@
-from code.algorithms.randomize import RandomAlgorithm
+# from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
-from code.algorithms.depth import BB
+from code.algorithms.BB import BB
 from code.algorithms.Astar import Astar
 #from code.algorithms.Astar_update import Astar
 from code.classes.car import Car, RedCar
@@ -41,6 +41,7 @@ def open_file2(input):
 
 
 
+
     return car_list, other_list
 
 
@@ -48,22 +49,58 @@ if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour9x9_4.csv'
-    size = 9
+    input = 'data/Rushhour6x6_2.csv'
+    size = 6
+car_list, full_list = open_file2(input)
 
-    car_list, full_list = open_file2(input)
-    test = Astar(full_list, car_list, size)
-    start = time.time()
-    moves = test.run()
-    print(time.time()-start)
+# ---------------------------------- Random ------------------------------------
+# random_model = RandomAlgorithm(full_list, car_list, size)
+# start = time.time()
+# moves = random_model.run()
+# end = time.time()
+# print(f"The processing time for this board was: {end - start}")
+# visualise(moves, open_file2(input)[1], size)
 
-    visualise(moves, open_file2(input)[1], size)
+# ---------------------------------- Greedy ------------------------------------
+# greedy = Greedy(full_list, car_list, size)
+# start = time.time()
+# moves = greedy.run()
+# end = time.time()
+# print(f"The processing time for this board was: {end - start}")
+#
+# ---------------------------------- Breadth -----------------------------------
+# breadth = Breadth(full_list, car_list, size)
+# start = time.time()
+# moves = breadth.run()
+# end = time.time()
+# print(f"The processing time for this board was: {end - start}")
+# visualise(moves, open_file2(input)[1], size)
+
+# ------------------------------- Branch & Bound -------------------------------
+# branch_and_bound = BB(full_list, car_list, size)
+# start = time.time()
+# moves = branch_and_bound.run()
+# end = time.time()
+# print(f"The processing time for this board was: {end - start}")
+# visualise(moves, open_file2(input)[1], size)
+
+# ---------------------------------- Astar -------------------------------------
+astar = Astar(full_list, car_list, size)
+start = time.time()
+moves = astar.run()
+end = time.time()
+print(f"The processing time for this board was: {end - start}")
+
+    # test = Astar(full_list, car_list, size)
+    # moves = test.run()
+    #
+    # visualise(moves, open_file2(input)[1], size)
     #final_board = mode(endstates)
     #print(final_board)
     #print(test.made_moves)
 
-    # test = Astar(full_list, car_list, size)
-
+    # test = BB(full_list, car_list, size)
+    #
     # start = time.time()
     # moves = test.run()
     # end = time.time()
