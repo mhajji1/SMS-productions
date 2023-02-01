@@ -42,42 +42,46 @@ def open_file2(input):
 
     return car_list, other_list
 
+
 def convert_output(full_list, moves):
     '''This function changes the algorithm integers back to the official car names, 1 -> A etc.'''
     car_name = []
     step = []
+
     for i, move in enumerate(moves):
         car_name.append(full_list[move[0]-1].signature)
         step.append(move[1])
+
     output = pd.DataFrame(list(zip(car_name, step)), columns =['Car', 'Move'])
     output.to_csv('output/output.csv', index=False)
     print("Saved output in output")
 
-    
+
 if __name__ == '__main__':
 
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour6x6_2.csv'
+    input = 'data/Rushhour6x6_3.csv'
     size = 6
+    car_list, full_list = open_file2(input)
 
 
-    for i in range(1000):
-        print(i)
-        car_list, full_list = open_file2(input)
-        i = RandomAlgorithm(full_list, car_list, size)
-        i.run()
-        moves = i.board.moves
-        number_of_moves.append(len(moves))
-    print(number_of_moves)
-
-
-    plt.hist(number_of_moves, bins=75)
-    plt.title("Distribution of random")
-    plt.xlabel("")
-    plt.ylabel("number of states")
-    plt.legend()
-    plt.show()
+    # for i in range(1000):
+    #     print(i)
+    #     car_list, full_list = open_file2(input)
+    #     i = RandomAlgorithm(full_list, car_list, size)
+    #     i.run()
+    #     moves = i.board.moves
+    #     number_of_moves.append(len(moves))
+    # print(number_of_moves)
+    #
+    #
+    # plt.hist(number_of_moves, bins=75)
+    # plt.title("Distribution of random")
+    # plt.xlabel("")
+    # plt.ylabel("number of states")
+    # plt.legend()
+    # plt.show()
 
 # ---------------------------------- Random ------------------------------------
 # random_model = RandomAlgorithm(full_list, car_list, size)
@@ -114,7 +118,11 @@ if __name__ == '__main__':
 astar = Breadth(full_list, car_list, size)
 start = time.time()
 moves = astar.run()
+print(len(moves))
+
 end = time.time()
+print(end-start)
+visualise(moves, open_file2(input)[1], size)
 print(f"The processing time for this board was: {end - start}")
 print(convert_output(full_list, moves))
 
