@@ -1,5 +1,5 @@
-# from code.algorithms.randomize import RandomAlgorithm
-from code.algorithms.greedy import Greedy
+from code.algorithms.randomize import RandomAlgorithm
+# from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
 from code.algorithms.Astar import Astar
 from code.algorithms.Breadth_and_Astar import BA_star
@@ -9,6 +9,7 @@ from code.visualisation.visualize import visualise
 from tqdm import tqdm
 import pandas as pd
 import time
+import matplotlib.pyplot as plt
 
 def open_file(input):
     data = pd.read_csv(input)
@@ -43,7 +44,13 @@ def open_file2(input):
 
 def convert_output(full_list, moves):
     '''This function changes the algorithm integers back to the official car names, 1 -> A etc.'''
+    
     return [(full_list[move[0]-1].signature, move[1]) for i, move in enumerate(moves)]
+
+def export_to_csv(moves):
+
+    pd.to_csv()
+    print(f"")
 
 if __name__ == '__main__':
 
@@ -51,7 +58,24 @@ if __name__ == '__main__':
     low = 100000
     input = 'data/Rushhour6x6_2.csv'
     size = 6
-    car_list, full_list = open_file2(input)
+
+
+    for i in range(1000):
+        print(i)
+        car_list, full_list = open_file2(input)
+        i = RandomAlgorithm(full_list, car_list, size)
+        i.run()
+        moves = i.board.moves
+        number_of_moves.append(len(moves))
+    print(number_of_moves)
+
+
+    plt.hist(number_of_moves, bins=75)
+    plt.title("Distribution of random")
+    plt.xlabel("")
+    plt.ylabel("number of states")
+    plt.legend()
+    plt.show()
 
 # ---------------------------------- Random ------------------------------------
 # random_model = RandomAlgorithm(full_list, car_list, size)
@@ -85,7 +109,7 @@ if __name__ == '__main__':
 # visualise(moves, open_file2(input)[1], size)
 
 # ---------------------------------- Astar -------------------------------------
-astar = Astar(full_list, car_list, size)
+astar = Breadth(full_list, car_list, size)
 start = time.time()
 moves = astar.run()
 end = time.time()

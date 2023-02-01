@@ -21,23 +21,19 @@ class Breadth():
         '''
         board_list = []
 
-        self.states.add(board.draw_board(self.size, self.full_list))
 
         for car_number, car in enumerate(self.full_list):
 
             # Determines the possible movements the car can take
             lower_range, upper_range = board.check_movement(self.size, car, car_number)
-            #print(car_number + 1, lower_range, upper_range)
 
             # This while loop is to make sure the car does not stay still
             for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:
 
 
-                # adds the difference to the car
                 new_board = deepcopy(board)
-                # new_board.add_move(car_number, difference)
-                # state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
-                state = str(new_board.update_board(car_number, car, difference))
+                # adds the difference to the car
+                state = new_board.update_board(car_number, car, difference)
 
                 if state not in self.states:
                     board_list.append(new_board)
@@ -55,6 +51,7 @@ class Breadth():
     def run(self):
 
         board = Board(self.car_list)
+        self.states.add(board.draw_board(self.size, self.full_list))
         _list = self.every_step(board)
 
         while self.win == False:

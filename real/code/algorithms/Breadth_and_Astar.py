@@ -67,12 +67,12 @@ class BA_star():
 
                     board_list.append(new_board)
 
-
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
                         # return something
                         return
+
         return board_list
 
 

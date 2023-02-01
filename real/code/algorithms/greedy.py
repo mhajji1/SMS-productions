@@ -3,22 +3,16 @@ from ..classes.board import Board
 from ..classes.car import Car
 
 
-# github radio rushia, college 2
-# set van numpy matrices
-# hash functie voor het vergelijken
-# probeer je staat zo klein mogelijk te omschrijven
-# de staat is alleen waar alle auto's staan
-# referenties naar auto's waar ze staan
-# college 3 radio rushia github, koppelt via dictionary -> copy.copy shallow onderaan model.py, tweede dictionary
 
+class Greedy(RandomAlgorithm):
 
-class Greedy:
-
-
-    def __init__(self, car_list, size):
+    def __init__(self, full_list, car_list, size):
+        super().__init__(full_list, car_list, size)
+        self.full_list = full_list
         self.car_list = car_list
         self.size = size
-        self.made_moves = []
+        self.win = False
+
         self.last_car = None
         self.current_car = None
 

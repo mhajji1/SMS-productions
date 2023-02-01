@@ -37,30 +37,30 @@ class RandomAlgorithm:
         return difference
 
 
-    def run(self, max_iterations = 1000):
+    def run(self, max_iterations = 100000):
         '''
         This function runs all commands in order to run the random simulation
         '''
 
-        board = Board(self.car_list, [])
+        self.board = Board(self.car_list, [])
 
         while self.win == False:
 
             lower_range = 0
             upper_range = 0
 
-            board.draw_board(self.size, self.full_list)
+            self.board.draw_board(self.size, self.full_list)
 
-            if board.check_win(self.size, self.full_list[-1]):
+            if self.board.check_win(self.size, self.full_list[-1]):
                 self.win = True
                 #print(len(board.moves))
 
                 return self.car_list
 
             while lower_range == 0 and upper_range == 0:
-                car_number = self.random_car(board)
-                lower_range, upper_range = board.check_movement(self.size, self.full_list[car_number], car_number)
+                car_number = self.random_car(self.board)
+                lower_range, upper_range = self.board.check_movement(self.size, self.full_list[car_number], car_number)
 
             difference = self.random_step(lower_range, upper_range)
 
-            board.add_move(car_number, difference)
+            self.board.add_move(car_number, difference)

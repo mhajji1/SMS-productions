@@ -6,7 +6,10 @@ class Board:
     def __init__(self, car_list, moves=[]):
         self.car_list = car_list
         self.moves = moves
-        self.value = 1000
+
+
+    def create_value(self, number):
+        self.value = number
 
 
     def draw_board(self, size, full_list):
@@ -26,6 +29,7 @@ class Board:
                 self.board[car_coords : car_coords + car.length, car.col] = car.name
 
         return str(self.car_list).replace(',', '')[1:-1]
+
 
     def update_board(self, car_number, car, difference):
         '''
@@ -53,7 +57,6 @@ class Board:
         '''
         This function moves a car by the difference amount and saves the move
         '''
-
         self.car_list[car_number] += difference
         self.moves.append((car_number + 1, difference))
 
@@ -62,7 +65,6 @@ class Board:
         '''
         This function returns if the path for the red car is clear
         '''
-
         if sum(self.board[red_car.row, self.car_list[-1] + red_car.length:]) == 0:
             return True
 
@@ -84,16 +86,16 @@ class Board:
             height = self.car_list[car_number]
 
 
-        # check all available spaces in the positive direction
+        # check all spaces in front of the car
         for x, i in enumerate(range(height + car.length, size)):
 
-            # the sum of [1,1,1] is three (meaning a white space, thus available)
+            #
             if line[i] != 0:
 
                 break
             upper_range = x + 1
 
-        # check all available spaces in the negative direction
+        # check all available spaces behind the car
         for y, j in enumerate(range(height - 1, -1, -1)):
 
 
