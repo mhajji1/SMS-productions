@@ -1,9 +1,8 @@
 from ..classes.board import Board
-import queue
 from copy import deepcopy
-from .randomize import RandomAlgorithm
 from collections import deque
 from tqdm import tqdm
+import numpy as np
 
 class Depth():
 
@@ -12,7 +11,7 @@ class Depth():
         self.full_list = full_list
         self.car_list = car_list
         self.states = set()
-        self.max_step = 10
+        self.max_depth = 10
         self.win = False
         self.winning_moves = None
         self.count = 0
@@ -23,40 +22,41 @@ class Depth():
         '''
         shows every possible step every car can take
         '''
+        next_states = []
+        np_board = board.draw_board(self.size, self.full_list)[1]
 
-        board_list = []
         for car_number, car in enumerate(self.full_list):
 
-            # Determines the possible movements the car can take
-            lower_range, upper_range = board.check_movement(self.size, car, car_number)
+            # determines the possible movements the car can take
+            lower_range, upper_range = board.check_movement(self.size, car, car_number, np_board)
 
-            # This while loop is to make sure the car does not stay still
+            # check all possible options per car, except 0 (no movement)
             for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:
 
+                # copy the numpy board
+                np_new = np.copy(np_board)
+                new_board = deepcopy(board)
 
                 # adds the difference to the car
-                new_board = deepcopy(board)
-                # new_board.add_move(car_number, difference)
-                state = str(new_board.update_board(car_number, car, difference))
-                # print(state)
+                state, np_board2 = new_board.update_board(car_number, car, difference, np_new)
 
+                # check the archive
                 if state not in self.states:
+                    next_states.append(new_board)
                     self.states.add(state)
 
                     self.count += 1
                     self.visited_states.append(self.count)
                     self.history.append(len(self.states))
 
-                    board_list.append(new_board)
-
-                    if new_board.check_win(self.size, self.full_list[-1]):
+                    if new_board.check_win(self.size, self.full_list[-1], np_board2):
                         self.win = True
                         self.winning_moves = new_board.moves
+                        # return something so run() keeps working
                         print(f'WINNER:{len(self.winning_moves)}')
-                        # return something
                         return []
 
-        return board_list
+        return next_states
 
     def step_size(self):
         if self.size == 6:
@@ -65,13 +65,14 @@ class Depth():
             return 10
 
 
-    def run(self, with_breadth=False):
-        # Flag to indicate if the loop should stop
-        stop = False
+    def run(self):
+        '''
+        This function runs through all branches until max_depth. The max depth
+        gets increased if there is no solution found for the puzzle
+        '''
 
         # Initialize the list of board states based on the with_breadth flag
         board = Board(self.car_list)
-        board.draw_board(self.size, self.full_list)
         board_list = self.every_step(board)
         partial_list = []
 
@@ -88,13 +89,12 @@ class Depth():
 
                 new_list = []
 
-                # Check if the number of moves for the current state is less than the max_step
-                if len(board2.moves) <= self.max_step:
+                # Check if the number of moves for the current state is less than the max_depth
+                if len(board2.moves) <= self.max_depth:
                     # Determine all possible states from the current state
                     new_list = self.every_step(board2)
 
                 else:
-
                     partial_list.extend(self.every_step(board2))
                     # print(partial_list)
 
@@ -104,8 +104,8 @@ class Depth():
 
             elif self.winning_moves == None:
 
-                    self.max_step += self.step_size()
-                    print(self.max_step)
+                    self.max_depth += self.step_size()
+                    print(self.max_depth)
                     current_list.extend(partial_list)
                     partial_list = []
 

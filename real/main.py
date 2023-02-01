@@ -1,11 +1,11 @@
 # from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
-from code.algorithms.Breadth_and_Astar import BA_star
+from code.algorithms.branch_and_bound import BB
 from code.algorithms.Astar import Astar
 from code.algorithms.depth import Depth
 #from code.algorithms.Astar_update import Astar
-from code.classes.car import Car, RedCar
+from code.classes.car import Car
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
 import pandas as pd
@@ -13,6 +13,8 @@ import time
 import argparse
 import itertools
 import matplotlib.pyplot as plt
+
+
 def open_file2(input):
     data = pd.read_csv(input)
     car_list = []
@@ -21,12 +23,13 @@ def open_file2(input):
     for key, line in data.iterrows():
         if line['orientation'] == 'H':
             car_list.append(line['col'] - 1)
-            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1)
+            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1, 'ok')
             other_list.append(key)
         else:
             car_list.append(line['row'] - 1)
-            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1)
+            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1, 'ok')
             other_list.append(key)
+
 
 
 
@@ -41,7 +44,7 @@ class main():
 
 
     def run_algorithms(self):
-        algorithm_list = ["RandomAlgorithm", "Greedy", "Breadth", "BB", "Astar", "BA_star"]
+        algorithm_list = ["RandomAlgorithm", "Greedy", "Breadth", "Depth", "Astar", "BB"]
         starting_boards = {"Rushhour6x6_1.csv": 6, "Rushhour6x6_2.csv": 6
         , "Rushhour6x6_3.csv": 6, "Rushhour9x9_4.csv": 9, "Rushhour9x9_5.csv":9,
          "Rushhour9x9_6.csv":9, "Rushhour12x12_7.csv":12}
@@ -112,24 +115,6 @@ class main():
             print(f"The processing time for this board was: {end - start}")
             print(moves)
 
-
-
-def open_file(input):
-    data = pd.read_csv(input)
-    _list = []
-
-    for key, line in data.iterrows():
-        if line['car'] != 'X':
-            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1)
-            _list.append(key)
-        else:
-            key = RedCar(line['orientation'], line['col'], line['row'], line['length'], key + 1)
-            _list.append(key)
-
-    return _list
-
-
-
 if __name__ == '__main__':
 
     # # Set-up parsing command line arguments
@@ -159,34 +144,34 @@ if __name__ == '__main__':
     # list_of_colours = [[1.0, 0.7019607843137254, 0.0], [0.5019607843137255, 0.24313725490196078, 0.4588235294117647], [1.0, 0.40784313725490196, 0.0], [0.6509803921568628, 0.7411764705882353, 0.8431372549019608], [0.7568627450980392, 0.0, 0.12549019607843137], [0.807843137254902, 0.6352941176470588, 0.3843137254901961], [0.5058823529411764,0.4392156862745098, 0.4], [0.0, 0.49019607843137253, 0.20392156862745098], [0.9647058823529412, 0.4627450980392157, 0.5568627450980392], [0.0, 0.3254901960784314, 0.5411764705882353], [1.0, 0.47843137254901963, 0.3607843137254902], [0.3254901960784314, 0.21568627450980393, 0.47843137254901963], [1.0, 0.5568627450980392, 0.0], [0.7019607843137254, 0.1568627450980392, 0.3176470588235294], [0.9568627450980393, 0.7843137254901961, 0.0], [0.4980392156862745, 0.09411764705882353, 0.050980392156862744], [0.5764705882352941, 0.6666666666666666, 0.0], [0.34901960784313724, 0.2, 0.08235294117647059], [0.9450980392156862, 0.22745098039215686,0.07450980392156863], [0.13725490196078433, 0.17254901960784313, 0.08627450980392157]]
     number_of_moves = []
     low = 100000
-    input = 'data/Rushhour9x9_5.csv'
+    input = 'data/Rushhour6x6_2.csv'
 
-    size = 9
+    size = 6
     car_list, full_list = open_file2(input)
 
     # start = time.time()
-    # test = BA_star(full_list, car_list, size)
+    # test = BB(full_list, car_list, size)
     # visted_states, history, moves = test.run(with_breadth = True)
     # end = time.time()
     # print(f"The processing time for this board was: {end - start}")
     # plt.plot(visted_states, history, label='breadth & branch and bound')
-    #
-    # start = time.time()
-    # test = BA_star(full_list, car_list, size)
-    # visted_states, history, moves = test.run()
-    # end = time.time()
-    # print(f"The processing time for this board was: {end - start}")
-    # plt.plot(visted_states, history, label='branch and bound')
 
     start = time.time()
-    test = Depth(full_list, car_list, size)
+    test = BB(full_list, car_list, size)
     visted_states, history, moves = test.run()
     end = time.time()
     print(f"The processing time for this board was: {end - start}")
-    plt.plot(visted_states, history, label='depth')
+    plt.plot(visted_states, history, label='branch and bound')
+
+    # start = time.time()
+    # test = Depth(full_list, car_list, size)
+    # visted_states, history, moves = test.run()
+    # end = time.time()
+    # print(f"The processing time for this board was: {end - start}")
+    # plt.plot(visted_states, history, label='Iterative deepening')
 
 
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.title("Memory growth")
     plt.xlabel("considered states")
     plt.ylabel("number of states")
