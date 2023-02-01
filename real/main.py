@@ -44,14 +44,16 @@ def open_file2(input):
 
 def convert_output(full_list, moves):
     '''This function changes the algorithm integers back to the official car names, 1 -> A etc.'''
+    car_name = []
+    step = []
+    for i, move in enumerate(moves):
+        car_name.append(full_list[move[0]-1].signature)
+        step.append(move[1])
+    output = pd.DataFrame(list(zip(car_name, step)), columns =['Car', 'Move'])
+    output.to_csv('output/output.csv', index=False)
+    print("Saved output in output")
+
     
-    return [(full_list[move[0]-1].signature, move[1]) for i, move in enumerate(moves)]
-
-def export_to_csv(moves):
-
-    pd.to_csv()
-    print(f"")
-
 if __name__ == '__main__':
 
     number_of_moves = []
