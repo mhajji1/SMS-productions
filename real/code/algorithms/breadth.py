@@ -3,7 +3,6 @@ from ..classes.board import Board
 from tqdm import tqdm
 import functools
 import operator
-import numpy as np
 
 class Breadth():
 
@@ -16,63 +15,56 @@ class Breadth():
         self.winning_moves = None
 
 
-    def generate_next_states(self, board):
+    def every_step(self, board):
         '''
         shows every possible step every car can take
         '''
+        board_list = []
 
-        next_states = []
-        np_board = board.draw_board(self.size, self.full_list)[1]
 
         for car_number, car in enumerate(self.full_list):
 
-            # determines the possible movements the car can take
-            lower_range, upper_range = board.check_movement(self.size, car, car_number, np_board)
+            # Determines the possible movements the car can take
+            lower_range, upper_range = board.check_movement(self.size, car, car_number)
 
-            # check all possible options per car, except 0 (no movement)
+            # This while loop is to make sure the car does not stay still
             for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:
 
-                # copy the numpy board
-                np_new = np.copy(np_board)
+
                 new_board = deepcopy(board)
-
                 # adds the difference to the car
-                state, np_board2 = new_board.update_board(car_number, car, difference, np_new)
+                state = new_board.update_board(car_number, car, difference)
 
-                # check the archive
                 if state not in self.states:
-                    next_states.append(new_board)
+                    board_list.append(new_board)
                     self.states.add(state)
 
-                    if new_board.check_win(self.size, self.full_list[-1], np_board2):
+                    if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
-                        # return something so run() keeps working
+                        # return something
                         return [0]
 
-        return next_states
+        return board_list
 
 
     def run(self):
-        '''
-        This function runs all commands necessary for each breadth layer
-        '''
 
-        # create the starting state
         board = Board(self.car_list)
-        # add to archive
-        state, np_board = board.draw_board(self.size, self.full_list)
-        self.states.add(state)
-        # create all next states
-        _list = self.generate_next_states(board)
+        self.states.add(board.draw_board(self.size, self.full_list))
+        _list = self.every_step(board)
 
         while self.win == False:
+
             next_layer = []
 
             for individual_board in tqdm(_list):
-                next_layer.extend(self.generate_next_states(individual_board))
+
+                temporary_list = self.every_step(individual_board)
+                next_layer.extend(temporary_list)
 
             _list = next_layer
 
         else:
+            print(self.winning_moves)
             return self.winning_moves
