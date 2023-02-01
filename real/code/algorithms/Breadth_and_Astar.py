@@ -3,6 +3,17 @@ from .breadth import Breadth
 from .Astar import Astar, PrioritizedItem
 from tqdm import tqdm
 from copy import deepcopy
+from .Astar import Astar
+
+from tqdm import tqdm
+
+from dataclasses import dataclass, field
+from typing import Any
+from queue import PriorityQueue
+import ast
+import copy
+import numpy as np
+
 
 class BA_star():
 
@@ -90,44 +101,9 @@ class BA_star():
             return _list
 
     def run(self):
-        stop = False
-        board_list = self.initial_states()
-        # self.max_step += 5
-        current_list = deepcopy(board_list)
 
-        # Continue looping until the infinite flag is set to True
-        while stop == False:
+        test = Astar(self.full_list, self.car_list, self.size)
 
-            # Continue looping until the win flag is set to True
-            if self.win == False:
-                if len(current_list) > 0:
-                    # print(len(self.states))
-                    board2 = current_list.pop()
-
-                    # if len(board2.moves) == 14:
-                    #     print('hi')
-
-                    new_list = []
-
-                    if len(board2.moves) <= self.max_step:
-                        new_list = self.every_step(board2)
-                        # print(board2)
-
-                        # Add the new list of moves to the current_list
-                        if new_list:
-                            # print(new_list)
-                            current_list.extend(new_list)
-
-                else:
-
-                    print(f'best result is: {len(self.winning_moves)}')
-                    stop = True
-                    return self.winning_moves
-            else:
-                print('FOUND WINNER')
-                print(len(self.winning_moves))
-
-
-                if len(self.winning_moves) < self.max_step:
-                    self.max_step = len(self.winning_moves)
-                self.win = False
+        test.queue.put((PrioritizedItem(test.calculate(i), i) for i in self.initial_states()))
+        test.states = self.states
+        test.run()

@@ -1,4 +1,4 @@
-from .car import Car, RedCar
+from .car import Car
 import numpy as np
 
 class Board:

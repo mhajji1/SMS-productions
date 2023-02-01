@@ -1,10 +1,10 @@
 # from code.algorithms.randomize import RandomAlgorithm
 from code.algorithms.greedy import Greedy
 from code.algorithms.breadth import Breadth
-from code.algorithms.BB import BB
 from code.algorithms.Astar import Astar
+from code.algorithms.Breadth_and_Astar import BA_star
 #from code.algorithms.Astar_update import Astar
-from code.classes.car import Car, RedCar
+from code.classes.car import Car
 from code.visualisation.visualize import visualise
 from tqdm import tqdm
 import pandas as pd
@@ -32,18 +32,18 @@ def open_file2(input):
     for key, line in data.iterrows():
         if line['orientation'] == 'H':
             car_list.append(line['col'] - 1)
-            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1)
+            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1, line['car'])
             other_list.append(key)
         else:
             car_list.append(line['row'] - 1)
-            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1)
+            key = Car(line['orientation'], line['col'], line['row'], line['length'], key + 1, line['car'])
             other_list.append(key)
-
-
-
 
     return car_list, other_list
 
+def convert_output(full_list, moves):
+    '''This function changes the algorithm integers back to the official car names, 1 -> A etc.'''
+    return [(full_list[move[0]-1].signature, move[1]) for i, move in enumerate(moves)]
 
 if __name__ == '__main__':
 
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     low = 100000
     input = 'data/Rushhour6x6_2.csv'
     size = 6
-car_list, full_list = open_file2(input)
+    car_list, full_list = open_file2(input)
 
 # ---------------------------------- Random ------------------------------------
 # random_model = RandomAlgorithm(full_list, car_list, size)
@@ -90,6 +90,7 @@ start = time.time()
 moves = astar.run()
 end = time.time()
 print(f"The processing time for this board was: {end - start}")
+print(convert_output(full_list, moves))
 
     # test = Astar(full_list, car_list, size)
     # moves = test.run()

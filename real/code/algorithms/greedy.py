@@ -1,6 +1,6 @@
 import random
 from ..classes.board import Board
-from ..classes.car import Car, RedCar
+from ..classes.car import Car
 
 
 # github radio rushia, college 2

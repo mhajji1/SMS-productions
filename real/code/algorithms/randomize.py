@@ -1,6 +1,6 @@
 import random
 from ..classes.board import Board
-from ..classes.car import Car, RedCar
+from ..classes.car import Car
 
 
 class RandomAlgorithm:
@@ -54,7 +54,7 @@ class RandomAlgorithm:
             if board.check_win(self.size, self.full_list[-1]):
                 self.win = True
                 #print(len(board.moves))
-            
+
                 return self.car_list
 
             while lower_range == 0 and upper_range == 0:
