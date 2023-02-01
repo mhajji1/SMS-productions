@@ -6,12 +6,10 @@ from code.algorithms.Astar import Astar
 #from code.algorithms.Astar_update import Astar
 from code.classes.car import Car
 from code.visualisation.visualize import visualise
-from tqdm import tqdm
 import pandas as pd
 import time
 import matplotlib.pyplot as plt
 import argparse
-
 
 
 def open_file2(input):
@@ -35,16 +33,18 @@ def open_file2(input):
     return car_list, other_list
 
 
-def convert_output(full_list, moves):
+def convert_output(full_list, moves, output_path):
     '''This function changes the algorithm integers back to the official car names, 1 -> A etc.'''
     car_name = []
     step = []
+
     for i, move in enumerate(moves):
         car_name.append(full_list[move[0]-1].signature)
         step.append(move[1])
+
     output = pd.DataFrame(list(zip(car_name, step)), columns =['Car', 'Move'])
-    output.to_csv('output/output.csv', index=False)
-    print("Saved output in output")
+    output.to_csv(f'output/{output_path}', index=False)
+    print(f"Saved output in output/{output_path}")
 
 
 class main():
@@ -81,7 +81,7 @@ class main():
             moves = random_model.run()
             end = time.time()
             print(f"The processing time for this board was: {end - start}")
-            visualise(moves, open_file2(input)[1], size)
+
 
 # ---------------------------------- Greedy ------------------------------------
         if index == 1:
@@ -97,9 +97,8 @@ class main():
             start = time.time()
             moves = breadth.run()
             end = time.time()
-            print(moves)
             print(f"The processing time for this board was: {end - start}")
-            visualise(moves, open_file2(f"data/{file}")[1], size)
+
 
 # ------------------------------- Branch & Bound -------------------------------
         if index == 3:
@@ -108,7 +107,7 @@ class main():
             moves = branch_and_bound.run()
             end = time.time()
             print(f"The processing time for this board was: {end - start}")
-            visualise(moves, open_file2(f"data/{file}")[1], size)
+
 
 # ---------------------------------- Astar -------------------------------------
         if index == 4:
@@ -126,7 +125,8 @@ class main():
             end = time.time()
             print(f"The processing time for this board was: {end - start}")
 
-        # visualise(moves, open_file2(input)[1], size)
+        convert_output(open_file2(f"data/{file}")[1], moves, file)
+        visualise(moves, open_file2(f"data/{file}")[1], size)
 
 
 if __name__ == '__main__':
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = "solve the rush hour puzzle")
 
     # Adding arguments
-    parser.add_argument("algorithm_name", help = "algoritm name")
+    parser.add_argument("algorithm_name", help = "algorithm name")
     parser.add_argument("-b", "--board_number",   type=int, default =1 , help="chooses board_file from 1 to 7 (default: 1)")
     # parser.add_argument("-s", "--size",   type=int, default =6 , help="board size (default: 6)")
 

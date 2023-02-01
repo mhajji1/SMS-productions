@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 
-def visualise(moves, car_list, size, speed = 0.1, save_png = True):
+def visualise(moves, car_list, size, speed = 0.1, save_png = False):
     '''
     This function plots the moves returned by the different Algorithms
     '''

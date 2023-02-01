@@ -19,7 +19,6 @@ class PrioritizedItem:
 
 
 class Astar():
-
     def __init__(self, full_list, car_list, size):
         self.size = size
         self.full_list = full_list
@@ -31,72 +30,55 @@ class Astar():
         self.queue = PriorityQueue()
 
     def every_step(self, board):
-        '''
-        shows every possible step every car can take
-        '''
+        """
+        creates every possible state for a given board
+        """
+
         for car_number, car in enumerate(self.full_list):
 
-            # determines the possible movements the car can take
+            # Determines the possible movements the car can take
             lower_range, upper_range = board.check_movement(self.size, car, car_number)
-        
 
             # This while loop is to make sure the car does not stay still
             for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:
 
-
                 # adds the difference to the car
                 new_board = deepcopy(board)
-                # new_board.add_move(car_number, difference)
-                # state = str(new_board.draw_board(self.size, self.full_list, return_board = True))
                 state = new_board.update_board(car_number, car, difference)
                 keys = self.states.keys()
 
                 if state not in keys and len(new_board.moves) < self.max_step:
 
                     self.states[state] = len(new_board.moves)
-
                     self.queue.put(PrioritizedItem(self.calculate(new_board),new_board))
-
 
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
-                        # return something
-                        print(' win')
-
 
                 elif state in keys and len(new_board.moves) < self.states[state]:
+
                     self.states[state] = len(new_board.moves)
-
                     self.queue.put(PrioritizedItem(self.calculate(new_board),new_board))
-
 
                     if new_board.check_win(self.size, self.full_list[-1]):
                         self.win = True
                         self.winning_moves = new_board.moves
-                        # return someng
-                        print(' win')
-
 
     def calculate(self, board):
         """
-        In this function we can implement heuristics to improve the breadth first searh
-        1. heuristic: check the first car of cars which blocks the red car
+        In this function we can implement heuristics to improve the breadth first search
+        1. heuristic: check the first car of cars which blocks the red car (and all the other cars which block red)
         2. heuristic: manhattan distance (how far is the red car from the exit)
-        3. heuristic: check the depth of the board it's found
-
-        Calculate number of cars blocking the way for the red car
-        This function only works when the board has been drawn
+        3. heuristic: check the depth at which the board is found
+        4. heuristic: end_state, makes a score based on the difference between the coordinates of the current board and the end board
+            this is a board which is the most common end board for 100 random simulation
         """
-        score = 0
-        extra = 0
-
+        cost_function = 0
         red_car = board.car_list[-1]
 
         # plus two because of the length of the red car
         numbers = set(board.board[self.full_list[-1].row, red_car+self.full_list[-1].length:])
-
-
         numbers.discard(0)
 
         if len(numbers) > 0:
@@ -110,58 +92,53 @@ class Astar():
             upper.discard(0)
             lower.discard(0)
             min_score = min([len(lower),len(upper)])
+            cost_function += min_score
 
-            #adding the manhattan distance
-            #manhattan_distance = self.size - (red_car+ 1)
+        #The manhattan distance
+        manhattan_distance = self.size - (red_car + 1)
 
-            #adding the number of steps already taken
-            steps_taken = len(board.moves)
+        #The number of steps already taken
+        steps_taken = len(board.moves)
 
-            #adding the number of intersections in the puzzle
-            # for i in board.car_list:
-            #     counter += i.check_movement()
-            #- manhattan_distance + steps_taken
+        cost_function += manhattan_distance + len(numbers) + self.priority(board) + steps_taken
 
-
-            cost_function = min_score + len(numbers) + self.priority(board)
+        return cost_function
 
 
-            return cost_function
+    def deterimine_end_state(self, itterations = 100):
+        """
+        This function creates an array of the end states of x amount of itterations
+        """
 
-        else:
-            return 0
-
-    def deterimine_end_state(self):
-
-        individual_scores = []
         endstates = []
-        for i in range(100):
+
+        for i in range(itterations):
             carlist = deepcopy(self.car_list)
             test = RandomAlgorithm(self.full_list, carlist, self.size)
             endstate = test.run(1000000)
-            print(endstate)
+
             endstates.append(str(endstate))
-            individual_scores.append(sum(endstate))
-
-
 
 
         self.common_end = np.array(ast.literal_eval(max(set(endstates), key=endstates.count)))
-        print(self.common_end)
-        print(sum(self.common_end))
-        print(individual_scores)
 
 
     def priority(self, board):
-
+        """
+        creates the most common end board (use the mode)
+        """
         return np.sum(np.absolute(np.array(board.car_list) - self.common_end))
 
 
     def run(self):
+        """
+        The main running function which can be called upon in the main class
+        """
 
         self.deterimine_end_state()
         board = Board(self.car_list)
         board.draw_board(self.size, self.full_list)
+
         self.queue.put(PrioritizedItem(self.calculate(board), board))
 
 
@@ -171,6 +148,7 @@ class Astar():
             if self.win == True:
 
                 self.max_step = len(self.winning_moves) - 1
-                print(self.winning_moves)
+
+                #if you turn self.win to true you can create an alogirthm which also checks if the given solution is the best (effectively a breadth search backwards)
                 # self.win = False
                 return self.winning_moves

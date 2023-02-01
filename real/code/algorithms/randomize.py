@@ -55,7 +55,7 @@ class RandomAlgorithm:
 
             if self.board.check_win(self.size, self.full_list[-1]):
                 self.win = True
-                return self.board.moves
+                return self.board.car_list
 
             while lower_range == 0 and upper_range == 0:
                 car_number = self.random_car(self.board)
