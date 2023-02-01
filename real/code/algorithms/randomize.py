@@ -4,6 +4,9 @@ from ..classes.car import Car
 
 
 class RandomAlgorithm:
+    '''
+    This Algorithm makes random moves till a winning condition is found
+    '''
 
     def __init__(self, full_list, car_list, size):
         self.full_list = full_list
@@ -17,7 +20,6 @@ class RandomAlgorithm:
         This function picks a random car
         '''
         random_index = random.randrange(len(board.car_list))
-        #car = board.full_list[random_index]
 
         return random_index
 
@@ -37,7 +39,7 @@ class RandomAlgorithm:
         return difference
 
 
-    def run(self, max_iterations = 100000):
+    def run(self, max_iterations = 1000000):
         '''
         This function runs all commands in order to run the random simulation
         '''
@@ -53,9 +55,7 @@ class RandomAlgorithm:
 
             if self.board.check_win(self.size, self.full_list[-1]):
                 self.win = True
-                #print(len(board.moves))
-
-                return self.car_list
+                return self.board.moves
 
             while lower_range == 0 and upper_range == 0:
                 car_number = self.random_car(self.board)

@@ -36,9 +36,9 @@ class Astar():
         '''
         for car_number, car in enumerate(self.full_list):
 
-            # Determines the possible movements the car can take
+            # determines the possible movements the car can take
             lower_range, upper_range = board.check_movement(self.size, car, car_number)
-            #print(car_number + 1, lower_range, upper_range)
+        
 
             # This while loop is to make sure the car does not stay still
             for difference in [*range(lower_range, 0),  *range(1, upper_range + 1)]:

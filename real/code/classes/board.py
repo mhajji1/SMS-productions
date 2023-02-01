@@ -2,14 +2,14 @@ from .car import Car
 import numpy as np
 
 class Board:
+    '''
+    This class contains all methods and attributes which apply to a state of the board
+    '''
 
     def __init__(self, car_list, moves=[]):
+        # car_list is an intger per car, to minimize memory
         self.car_list = car_list
         self.moves = moves
-
-
-    def create_value(self, number):
-        self.value = number
 
 
     def draw_board(self, size, full_list):
@@ -28,6 +28,7 @@ class Board:
             else:
                 self.board[car_coords : car_coords + car.length, car.col] = car.name
 
+        # return the state to be added into an archive
         return str(self.car_list).replace(',', '')[1:-1]
 
 
@@ -50,6 +51,7 @@ class Board:
             # draw the new coordinates
             self.board[self.car_list[car_number] : self.car_list[car_number] + car.length, car.col] = car.name
 
+        # return the state to be added into an archive
         return str(self.car_list).replace(',', '')[1:-1]
 
 
@@ -85,81 +87,23 @@ class Board:
             line = self.board[:, car.col]
             height = self.car_list[car_number]
 
-
         # check all spaces in front of the car
         for x, i in enumerate(range(height + car.length, size)):
-
-            #
+            # go through all spaces till a not empty one is found
             if line[i] != 0:
-
                 break
             upper_range = x + 1
-
         # check all available spaces behind the car
         for y, j in enumerate(range(height - 1, -1, -1)):
-
-
             if line[j] != 0:
-
                 break
             lower_range = -(y + 1)
-
         # the ranges are the max amount of steps in each direction
         return lower_range, upper_range
 
 
     def __repr__(self):
         '''
-        Make sure that the object is printed properly if it is in a list/dict.
+        Make sure that the object is displayed properly
         '''
         return f'{self.board}' + '\n'
-
-
-    # def check_movement(self, size, car_number, full_list, return_cars=False):
-    #     '''
-    #     This function checks which spaces are available
-    #     '''
-    #
-    #     upper_range = 0
-    #     lower_range = 0
-    #     # blocking_cars = []
-    #
-    #     car = full_list[car_number]
-    #
-    #     # change variables for H, horizontal and else vertical cars
-    #     if car.orientation == 'H':
-    #         line = self.board[car.row, :]
-    #         height = self.car_list[car_number]
-    #
-    #     else:
-    #         line = self.board[:, car.col]
-    #         height = self.car_list[car_number]
-    #
-    #
-    #     # check all available spaces in the positive direction
-    #     for x, i in enumerate(range(height + car.length, size)):
-    #
-    #         # the sum of [1,1,1] is three (meaning a white space, thus available)
-    #         if line[i] != 0:
-    #
-    #             # if return_cars == True:
-    #             #     blocking_cars.append(self.car_list[line[i]-1])
-    #             break
-    #         upper_range = x + 1
-    #
-    #     # check all available spaces in the negative direction
-    #     for y, j in enumerate(range(height - 1, -1, -1)):
-    #
-    #
-    #         if line[j] != 0:
-    #
-    #             # if return_cars == True:
-    #             #     blocking_cars.append(self.car_list[line[j]-1])
-    #             break
-    #         lower_range = -(y + 1)
-    #
-    #
-    #     # if return_cars == True:
-    #     #     return blocking_cars, lower_range, upper_range
-    #     # else:
-    #     return lower_range, upper_range

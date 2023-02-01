@@ -1,10 +1,11 @@
 from copy import deepcopy
 from ..classes.board import Board
-from tqdm import tqdm
-import functools
-import operator
+
 
 class Breadth():
+    '''
+    This Algorithm goes through all next possibilities till the best solution is found
+    '''
 
     def __init__(self, full_list, car_list, size):
         self.size = size
@@ -49,6 +50,9 @@ class Breadth():
 
 
     def run(self):
+        '''
+        This function runs all methods to run the Breadth First Algorithm with archive
+        '''
 
         board = Board(self.car_list)
         self.states.add(board.draw_board(self.size, self.full_list))
@@ -58,7 +62,7 @@ class Breadth():
 
             next_layer = []
 
-            for individual_board in tqdm(_list):
+            for individual_board in _list:
 
                 temporary_list = self.every_step(individual_board)
                 next_layer.extend(temporary_list)
@@ -66,5 +70,4 @@ class Breadth():
             _list = next_layer
 
         else:
-            print(self.winning_moves)
             return self.winning_moves

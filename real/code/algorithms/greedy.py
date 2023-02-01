@@ -5,10 +5,10 @@ from ..classes.car import Car
 
 
 
-class Greedy(RandomAlgorithm):
+class Greedy():
 
     def __init__(self, full_list, car_list, size):
-        super().__init__(full_list, car_list, size)
+
         self.full_list = full_list
         self.car_list = car_list
         self.size = size
@@ -17,6 +17,10 @@ class Greedy(RandomAlgorithm):
         self.last_car = None
         self.current_car = None
 
+
+    def run(self):
+        print("This Algorithm does not work with the current architecture")
+        return [0]
 
     def max_step(self, difference, car):
         '''
