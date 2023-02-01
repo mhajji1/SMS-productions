@@ -54,7 +54,7 @@ class main():
 
 
     def run_algorithms(self):
-        algorithm_list = ["RandomAlgorithm", "Greedy", "Breadth", "Depth", "Astar", "ID"]
+        algorithm_list = ["RandomAlgorithm", "Greedy", "Breadth", "ID", "Astar"]
         starting_boards = {"Rushhour6x6_1.csv": 6, "Rushhour6x6_2.csv": 6
         , "Rushhour6x6_3.csv": 6, "Rushhour9x9_4.csv": 9, "Rushhour9x9_5.csv":9,
          "Rushhour9x9_6.csv":9, "Rushhour12x12_7.csv":12}
@@ -99,11 +99,11 @@ class main():
             print(f"The processing time for this board was: {end - start}")
 
 
-# ------------------------------- Branch & Bound -------------------------------
+# ------------------------------- Iterative Deepening -------------------------------
         if index == 3:
-            branch_and_bound = BB(full_list, car_list, size)
+            deepening = ID(full_list, car_list, size)
             start = time.time()
-            moves = branch_and_bound.run()
+            moves = deepening.run()
             end = time.time()
             print(f"The processing time for this board was: {end - start}")
 
@@ -116,13 +116,6 @@ class main():
             end = time.time()
             print(f"The processing time for this board was: {end - start}")
 
-# ---------------------------------- Astar -------------------------------------
-        if index == 5:
-            deepening = ID(full_list, car_list, size)
-            start = time.time()
-            moves = deepening.run()
-            end = time.time()
-            print(f"The processing time for this board was: {end - start}")
 
         convert_output(open_file2(f"data/{file}")[1], moves, file)
         visualise(moves, open_file2(f"data/{file}")[1], size)
